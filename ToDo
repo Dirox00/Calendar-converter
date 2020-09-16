@@ -1,2 +1,1 @@
-1. Fix date update (it does it where it should't)
-2. Make a month-number based sum system
+Improve functioning with recurrence on event instead of for loops.

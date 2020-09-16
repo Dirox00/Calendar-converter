@@ -1,13 +1,21 @@
-import tabula
-
 import csv 
 
+import datetime
+
 import re
+
+import tabula
+
+import g_calendar
 
 
 file = "Horario_Ing_Mat_1o_BIEN.pdf"
 
-# tabula.convert_into(file, "converted.csv", output_format="csv", pages="all")
+num_pages = 4
+
+# for i in range(num_pages):
+#     tabula.convert_into(file, "converted.csv", output_format="csv", pages=i+1)
+tabula.convert_into(file, "converted.csv", output_format="csv", pages=1) # better one by one
 
 with open("converted.csv", 'r') as f:
     content = csv.reader(f)
@@ -15,18 +23,33 @@ with open("converted.csv", 'r') as f:
     for l in content:
         if bool(re.match('\d\d/\d\d/202\d- \d\d/\d\d/202\d', l[0])):
             l_split = l[0].split('- ')
-            startDate = [int(x) for x in l_split[0].split('/')]
-            endDate = [int(x) for x in l_split[1].split('/')]
+            startDate = datetime.date(*[int(x) for x in l_split[0].split('/')[::-1]])
+            endDate = datetime.date(*[int(x) for x in l_split[1].split('/')[::-1]])
 
-            curDate = startDate - 3
+            curDate = startDate - datetime.timedelta(3)
+
+            reps = (endDate - startDate).days//5
+
         elif len(l) > 2 and bool(re.match('\[\d\d\d\d\d\d', l[1])):
             if l[0]:
                 if l[0] == 'UNES':
-                    curDate[0] += 2
-                curDate[0] += 1
+                    curDate += datetime.timedelta(2)
+                curDate += datetime.timedelta(1)
+            fwdDate = curDate
             # meter evento
-            body = l[1] + l[3] + l[4]
-            hours = l[5].split('-\n')
-            sDate = '{}-{}-{}T{}:00'.format(curDate[2], curDate[1], curDate[0], hours[0])
-            eDate = '{}-{}-{}T{}:00'.format(curDate[2], curDate[1], curDate[0], hours[1])
-            print(body, '\n', sDate, '\n', eDate, '\n'*3)
+            for _ in range(reps):
+                body = '; '.join([l[1], l[3], l[4]])
+                hours = l[5].split('-\n')
+                sDate = '{}-{:02d}-{:02d}T{}:00'.format(fwdDate.year, fwdDate.month, fwdDate.day, hours[0])
+                eDate = '{}-{:02d}-{:02d}T{}:00'.format(fwdDate.year, fwdDate.month, fwdDate.day, hours[1])
+                print(body, '\n', sDate, '\n', eDate, '\n'*3)
+
+                GMT_OFF = '+02:00'
+                EVENT = {
+                    'summary': body,
+                    'start': {'dateTime': '{}{}'.format(sDate, GMT_OFF)},
+                    'end': {'dateTime': '{}{}'.format(eDate, GMT_OFF)}
+                }
+                g_calendar.add_event(EVENT)
+
+                fwdDate += datetime.timedelta(7)
