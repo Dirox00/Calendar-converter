@@ -9,15 +9,15 @@ import tabula
 import g_calendar
 
 
-file = "Horario_Ing_Mat_1o_BIEN.pdf"
+file = "Horario_Ing_Mat_PRUEBA.pdf"
 
 num_pages = 4
 
 # for i in range(num_pages):
 #     tabula.convert_into(file, "converted.csv", output_format="csv", pages=i+1)
-tabula.convert_into(file, "converted.csv", output_format="csv", pages=1) # better one by one
-
-with open("converted.csv", 'r') as f:
+tabula.convert_into(file, "converted_PRUEBA.csv", output_format="csv", pages=1) # better one by one
+exit()
+with open("converted_PRUEBA.csv", 'r') as f:
     content = csv.reader(f)
 
     for l in content:

@@ -30,7 +30,7 @@ def add_event(summary, start, end):
         'start': {'dateTime': '{}'.format(start), 'timeZone': TIMEZONE},
         'end': {'dateTime': '{}'.format(end), 'timeZone': TIMEZONE}
     }
-    e = CAL.events().insert(calendarId='h79uann7ldpngf4hj8e35v1u0c@group.calendar.google.com', body=EVENT).execute()
+    e = CAL.events().insert(calendarId='g8vlb8nhes1amq2ujpv4t8n8ho@group.calendar.google.com', body=EVENT).execute()
 
     with open('Data/log.json', 'r+') as f:
         data = json.load(f)
